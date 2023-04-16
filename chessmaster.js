@@ -607,7 +607,6 @@ var Chess = function (fen) {
         // console.log("i is: " + i);
         // console.log("square is: " + square);
         if (board[square] == null) {
-          console.log("the square is available, adding a potential move");
           add_move(board, moves, i, square, BITS.NORMAL);
 
           /* double square */
@@ -652,7 +651,7 @@ var Chess = function (fen) {
       }
     }
 
-    console.log(moves);
+    //JP: console.log(moves);
 
     /* check for castling if: a) we're generating all moves, or b) we're doing
      * single square move generation on the king's square
@@ -1355,6 +1354,11 @@ var Chess = function (fen) {
       return moves;
     },
 
+    ugly_moves: function (options) {
+      var ugly_moves = generate_moves(options);
+      return ugly_moves;
+    },
+
     in_check: function () {
       return in_check();
     },
@@ -1721,6 +1725,13 @@ var Chess = function (fen) {
        */
       var pretty_move = make_pretty(move_obj);
 
+      make_move(move_obj);
+
+      return pretty_move;
+    },
+
+    ugly_move: function (move_obj, options) {
+      var pretty_move = make_pretty(move_obj);
       make_move(move_obj);
 
       return pretty_move;
