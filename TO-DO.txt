@@ -1,0 +1,5 @@
+- Each worker set should have its own bonus:
+	- See own movements
+	- See enemy movements
+	- Pawn double step at start (or always double step?)
+- Xinput

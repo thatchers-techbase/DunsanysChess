@@ -1,0 +1,59 @@
+<h1>Joystick testers</h1>
+Move a joystick on controller to connect.
+<div id="axes" style="display: flex; flex-direction: column"></div>
+<script>
+  const joysticks = {
+    9: "D-Pad",
+    1: "LS Vertical",
+    0: "LS Horizontal",
+    2: "RS Horizontal",
+    5: "RS Vertical",
+  };
+  window.addEventListener("gamepadconnected", (event) => {
+    const update = () => {
+      const output = document.getElementById("axes");
+      output.innerHTML = ""; // clear the output
+
+      for (const gamepad of navigator.getGamepads()) {
+        if (!gamepad) continue;
+        for (const [index, axis] of gamepad.axes.entries()) {
+          output.insertAdjacentHTML(
+            "beforeend",
+            `<label>${gamepad.index}, ${index}
+             <progress value=${axis * 0.5 + 0.5}></progress>
+           </label>`
+          );
+        }
+      }
+      requestAnimationFrame(update);
+    };
+    update();
+  });
+</script>
+<h1>Buttons tester</h1>
+Press button on controller to connect.
+<div id="buttons" style="display: flex; flex-direction: column"></div>
+<script>
+  window.addEventListener("gamepadconnected", (event) => {
+    const update = () => {
+      const output = document.getElementById("buttons");
+      output.innerHTML = ""; // clear the output
+
+      for (const gamepad of navigator.getGamepads()) {
+        if (!gamepad) continue;
+        for (const [index, button] of gamepad.buttons.entries()) {
+          output.insertAdjacentHTML(
+            "beforeend",
+            `<label>${gamepad.index}, ${index}
+             <progress value=${button.value}></progress>
+             ${button.touched ? "touched" : ""}
+             ${button.pressed ? "pressed" : ""}
+           </label>`
+          );
+        }
+      }
+      requestAnimationFrame(update);
+    };
+    update();
+  });
+</script>

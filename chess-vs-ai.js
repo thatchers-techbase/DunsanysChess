@@ -499,7 +499,7 @@ function greySquare(square, enemy) {
 
 function onMouseoverSquare(square, piece) {
   // get list of possible moves for this square
-  var isBlack = piece.startsWith("b");
+  var isBlack = piece && piece.startsWith("b");
   var moves = game.moves({
     square: square,
     verbose: true,
@@ -564,5 +564,6 @@ var config = {
   onSnapEnd: onSnapEnd,
   onMouseoutSquare: onMouseoutSquare,
   onMouseoverSquare: onMouseoverSquare,
+  showNotation: false,
 };
 board = Chessboard("board", config);

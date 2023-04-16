@@ -569,10 +569,11 @@ var Chess = function (fen) {
     var them = swap_color(us);
 
     // JP: lets us see enemy movements
-    if (typeof options !== "undefined" && "enemy" in options && options.enemy) {
-      us = BLACK;
-      them = WHITE;
-    }
+    // if (typeof options !== "undefined" && "enemy" in options && options.enemy) {
+    //   console.log("Calculating enemy moves.");
+    //   us = BLACK;
+    //   them = WHITE;
+    // }
 
     var second_rank = { b: RANK_7, w: RANK_4 };
 
@@ -612,8 +613,6 @@ var Chess = function (fen) {
       if (piece.type === PAWN) {
         /* single square, non-capturing */
         var square = i + PAWN_OFFSETS[us][0];
-        // console.log("i is: " + i);
-        // console.log("square is: " + square);
         if (board[square] == null) {
           add_move(board, moves, i, square, BITS.NORMAL);
 
