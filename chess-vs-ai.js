@@ -11,8 +11,15 @@ var globalSum = 0; // always from black's perspective. Negative for white's pers
 var searchDepth = 2;
 var validation = game.validate_fen(dunsanyFEN);
 
-var whiteSquareGrey = "#a9a9a9";
-var blackSquareGrey = "#696969";
+var whiteSquareGrey = "#809BEB";
+var blackSquareGrey = "#6175B1";
+var whiteSquareGreyEnemy = "#FF5D5D";
+var blackSquareGreyEnemy = "#C53A3A";
+
+// var whiteSquareGrey = "#a9a9a9";
+// var blackSquareGrey = "#696969";
+// var whiteSquareGreyEnemy = "#a9a9a9";
+// var blackSquareGreyEnemy = "#696969";
 
 console.log(validation);
 
@@ -472,7 +479,7 @@ function removeGreySquares() {
   $("#board .square-55d63").css("background", "");
 }
 
-function greySquare(square) {
+function greySquare(square, enemy) {
   var $square = $("#board .square-" + square);
 
   var background = whiteSquareGrey;
@@ -480,25 +487,34 @@ function greySquare(square) {
     background = blackSquareGrey;
   }
 
+  if (enemy) {
+    var background = whiteSquareGreyEnemy;
+    if ($square.hasClass("black-3c85d")) {
+      background = blackSquareGreyEnemy;
+    }
+  }
+
   $square.css("background", background);
 }
 
 function onMouseoverSquare(square, piece) {
   // get list of possible moves for this square
+  var isBlack = piece.startsWith("b");
   var moves = game.moves({
     square: square,
     verbose: true,
+    enemy: isBlack,
   });
 
   // exit if there are no moves available for this square
   if (moves.length === 0) return;
 
   // highlight the square they moused over
-  greySquare(square);
+  greySquare(square, isBlack);
 
   // highlight the possible squares for this piece
   for (var i = 0; i < moves.length; i++) {
-    greySquare(moves[i].to);
+    greySquare(moves[i].to, isBlack);
   }
 }
 

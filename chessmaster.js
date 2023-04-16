@@ -564,8 +564,16 @@ var Chess = function (fen) {
     }
 
     var moves = [];
+
     var us = turn;
     var them = swap_color(us);
+
+    // JP: lets us see enemy movements
+    if (typeof options !== "undefined" && "enemy" in options && options.enemy) {
+      us = BLACK;
+      them = WHITE;
+    }
+
     var second_rank = { b: RANK_7, w: RANK_4 };
 
     var first_sq = SQUARES.a8;
