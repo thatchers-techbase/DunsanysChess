@@ -900,6 +900,16 @@
     }
 
     function buildPieceImgSrc(piece) {
+      console.log(`Piece is: ${piece}`);
+      if (piece == "wP") {
+        return (
+          "img/chesspieces/wikipedia/" +
+          piece +
+          Math.floor(Math.random() * 9) +
+          ".png"
+        );
+      }
+
       if (isFunction(config.pieceTheme)) {
         return config.pieceTheme(piece);
       }
