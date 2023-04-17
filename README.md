@@ -1,6 +1,6 @@
 # Dunsany's Chess
 
-Dunsany's Chess is a browser-based chess game that uses [chessboard.js] as a JavaScript chessboard component. It depends on [jQuery].
+Dunsany's Chess is a browser-based chess game that uses [chessboardjs.com] as a JavaScript chessboard component. It depends on [jQuery].
 
 Please see [chessboardjs.com], [chess.js] for documentation and examples of how to use these libraries.
 
