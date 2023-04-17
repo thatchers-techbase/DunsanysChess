@@ -629,7 +629,8 @@ function startGame() {
 
   document.getElementById("difficulty-display").innerHTML =
     "DIFFICULTY: " + difficultyLookup[searchDepth];
-  document.getElementById("high-score").innerHTML = "HIGH SCORE: " + highScore;
+  document.getElementById("high-score").innerHTML =
+    "HIGH SCORE: " + (highScore ? highScore : "0");
   document.getElementById("setup").style.display = "none";
   document.getElementById("board-container").style.display = "block";
 }
