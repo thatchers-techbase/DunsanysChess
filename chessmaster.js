@@ -126,6 +126,7 @@ var Chess = function (fen) {
   var RANK_6 = 2;
   var RANK_7 = 1;
   var RANK_8 = 0;
+  var RANK_0 = -1;
 
   var SQUARES = {
     a8: 0,
@@ -575,7 +576,7 @@ var Chess = function (fen) {
     //   them = WHITE;
     // }
 
-    var second_rank = { b: RANK_7, w: RANK_4 };
+    var second_rank = { b: RANK_7, w: RANK_0 }; // JP: Controls which line of pawns can move two steps
 
     var first_sq = SQUARES.a8;
     var last_sq = SQUARES.h1;

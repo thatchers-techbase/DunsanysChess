@@ -2,13 +2,138 @@
 <html>
   <head>
     <title>Dunsany's Chess</title>
+    <link rel="stylesheet" href="css/intro.css" />
     <link rel="stylesheet" href="css/chessboard-1.0.0.css" />
   </head>
   <body>
-    <div id="board" style="width: 800px"></div>
+    <!-- board setup view-->
+    <div id="setup" style="text-align: center">
+      <h1>Dunsany's Chess</h1>
+
+      <h2>Select your character</h2>
+
+      <label>
+        <input type="radio" id="bin" value="wP2" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP2.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="cleaner" value="wP0" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP0.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="barista" value="wP1" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP1.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="tdriver" value="wP7" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP7.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="wworker" value="wP8" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP8.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="nurse" value="wP6" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP6.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="doctor" value="wP5" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP5.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="street" value="wP3" name="character-select" />
+        <img class="character-select" src="img/chesspieces/wikipedia/wP3.png" />
+      </label>
+
+      <br /><br />
+
+      <h2>Select your difficulty</h2>
+
+      <label>
+        <input type="radio" id="veasy" value="1" name="difficulty" />
+        <img class="difficulty" src="img/difficulties/veasy.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="easy" value="2" name="difficulty" />
+        <img class="difficulty" src="img/difficulties/easy.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="normal" value="3" name="difficulty" />
+        <img class="difficulty" src="img/difficulties/normal.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="hard" value="4" name="difficulty" />
+        <img class="difficulty" src="img/difficulties/hard.png" />
+      </label>
+
+      <label>
+        <input type="radio" id="vhard" value="5" name="difficulty" />
+        <img class="difficulty" src="img/difficulties/vhard.png" />
+      </label>
+
+      <br /><br /><br />
+
+      <button
+        id="go"
+        type="button"
+        disabled="disabled"
+        style="
+          height: 75px;
+          width: 200px;
+
+          font-size: 22pt;
+        "
+        onClick="startGame()"
+      >
+        Go
+      </button>
+    </div>
+
+    <!-- chessboard -->
+    <div id="board-container" style="display: none">
+      <div id="score" class="score">SCORE: 0</div>
+      <div id="high-score" class="score high-score">HIGH SCORE: 0</div>
+      <div id="board" style="width: 800px"></div>
+      <br />
+      <button onclick="window.location.reload()">Admit defeat</button>
+      <button onclick="highScoreOverlay()">High scores</button>
+      <div id="difficulty-display" class="score high-score">
+        DIFFICULTY: Medium
+      </div>
+    </div>
+
+    <!-- scripts -->
     <script src="https://chessboardjs.com/js/jquery-3.4.1.min.js"></script>
     <script src="js/chessboard-1.0.0.js"></script>
     <script src="chessmaster.js"></script>
     <script src="chess-vs-ai.js"></script>
+    <script>
+      $(document).ready(function () {
+        var character = $("input[name=character-select]");
+        var difficulty = $("input[name=difficulty]");
+
+        validate();
+
+        $("input[type='radio']").change(validate);
+
+        function validate() {
+          if ($(character).is(":checked") && $(difficulty).is(":checked")) {
+            document.getElementById("go").disabled = false;
+          } else {
+            document.getElementById("go").disabled = true;
+          }
+        }
+      });
+    </script>
   </body>
 </html>

@@ -16,6 +16,26 @@ var blackSquareGrey = "#6175B1";
 var whiteSquareGreyEnemy = "#FF5D5D";
 var blackSquareGreyEnemy = "#C53A3A";
 
+var character = "wP";
+
+var score = 0;
+var highScore = localStorage.getItem("high-score");
+const scoreSheet = {
+  p: 100,
+  n: 200,
+  b: 200,
+  r: 300,
+  q: 500,
+  k: 1000,
+};
+const difficultyLookup = {
+  1: "Very Easy",
+  2: "Easy",
+  3: "Normal",
+  4: "Hard",
+  5: "Very Hard",
+};
+
 // var whiteSquareGrey = "#a9a9a9";
 // var blackSquareGrey = "#696969";
 // var whiteSquareGreyEnemy = "#a9a9a9";
@@ -535,6 +555,15 @@ function onDrop(source, target) {
   // illegal move
   if (move === null) return "snapback";
 
+  if (move.captured) {
+    score += scoreSheet[move.captured] * searchDepth;
+    document.getElementById("score").innerHTML = `SCORE: ${score}`;
+    if (score > highScore) {
+      localStorage.setItem("high-score", score);
+      document.getElementById("high-score").innerHTML = `HIGH SCORE: ${score}`;
+    }
+  }
+
   // make random legal move for black
   //window.setTimeout(makeRandomMove, 250);
 
@@ -556,6 +585,18 @@ function onSnapEnd() {
   board.position(game.fen());
 }
 
+function pieceTheme(piece) {
+  if (piece == "wP") {
+    return (
+      "img/chesspieces/wikipedia/" +
+      (typeof character != "undefined" ? character : "wP") +
+      ".png"
+    );
+  } else {
+    return "img/chesspieces/wikipedia/" + piece + ".png";
+  }
+}
+
 var config = {
   draggable: true,
   position: dunsanyFEN,
@@ -565,5 +606,30 @@ var config = {
   onMouseoutSquare: onMouseoutSquare,
   onMouseoverSquare: onMouseoverSquare,
   showNotation: false,
+  pieceTheme: pieceTheme,
 };
-board = Chessboard("board", config);
+
+function startGame() {
+  character = document.querySelector(
+    'input[name="character-select"]:checked'
+  ).value;
+  var difficulty = document.querySelector(
+    'input[name="difficulty"]:checked'
+  ).value;
+
+  console.log(`Play as: ${character} | Difficulty: ${difficulty}`);
+
+  try {
+    searchDepth = parseInt(difficulty);
+  } catch (e) {
+    searchDepth = 3; // fall back to medium
+  }
+
+  board = Chessboard("board", config);
+
+  document.getElementById("difficulty-display").innerHTML =
+    "DIFFICULTY: " + difficultyLookup[searchDepth];
+  document.getElementById("high-score").innerHTML = "HIGH SCORE: " + highScore;
+  document.getElementById("setup").style.display = "none";
+  document.getElementById("board-container").style.display = "block";
+}
