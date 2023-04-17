@@ -4,7 +4,7 @@ Dunsany's Chess is a browser-based chess game that uses chessboard.js is a JavaS
 
 Please see [chessboardjs.com], [chess.js] for documentation and examples of how to use these libraries.
 
-## What is Dunsany's Chess??
+## What is Dunsany's Chess?
 
 Dunsany's chess, also known as Dunsany's game, is an asymmetric chess variant in which Black has the standard chess army and White has 32 pawns. This game was invented by Lord Dunsany in 1942. It was published the same year in Fairy Chess Review (August issue) and in Joseph Boyer's Nouveaux Jeux d'Echecs Non-orthodoxes.
 
