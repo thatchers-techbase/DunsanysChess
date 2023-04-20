@@ -1,15 +1,29 @@
-// NOTE: this example uses the chess.js library:
-// https://github.com/jhlywa/chess.js
-
+// Board setup
 var dunsanyFEN =
   "rnbqkbnr/pppppppp/8/8/PPPPPPPP/PPPPPPPP/PPPPPPPP/PPPPPPPP w KQkq - 0 1";
 
+var hordeFEN =
+  "rnbqkbnr/pppppppp/8/1PP2PP1/PPPPPPPP/PPPPPPPP/PPPPPPPP/PPPPPPPP w KQkq - 0 1";
+
 var board = null;
 var game = new Chess(dunsanyFEN);
-
-var globalSum = 0; // always from black's perspective. Negative for white's perspective.
-var searchDepth = 2;
 var validation = game.validate_fen(dunsanyFEN);
+console.log(validation);
+
+var config = {
+  draggable: true,
+  position: dunsanyFEN,
+  onDragStart: onDragStart,
+  onDrop: onDrop,
+  onSnapEnd: onSnapEnd,
+  onMouseoutSquare: onMouseoutSquare,
+  onMouseoverSquare: onMouseoverSquare,
+  showNotation: false,
+  pieceTheme: pieceTheme,
+};
+
+var globalSum = 0; // Always from black's perspective. Negative for white's perspective.
+var searchDepth = 2;
 
 var whiteSquareGrey = "#809BEB";
 var blackSquareGrey = "#6175B1";
@@ -17,6 +31,11 @@ var whiteSquareGreyEnemy = "#FF5D5D";
 var blackSquareGreyEnemy = "#C53A3A";
 
 var character = "wP";
+
+// Gamepad control data
+var cursorPosition = "a4";
+var selectedSourcePosition = "";
+var selectedTargetPosition = "";
 
 var score = 0;
 var highScore = localStorage.getItem("high-score");
@@ -35,13 +54,6 @@ const difficultyLookup = {
   4: "Hard",
   5: "Very Hard",
 };
-
-// var whiteSquareGrey = "#a9a9a9";
-// var blackSquareGrey = "#696969";
-// var whiteSquareGreyEnemy = "#a9a9a9";
-// var blackSquareGreyEnemy = "#696969";
-
-console.log(validation);
 
 /*
  * Piece Square Tables, adapted from Sunfish.py:
@@ -136,21 +148,10 @@ var pst_b = {
 var pstOpponent = { w: pst_b, b: pst_w };
 var pstSelf = { w: pst_w, b: pst_b };
 
-function onDragStart(source, piece, position, orientation) {
-  // do not pick up pieces if the game is over
-  if (game.game_over()) {
-    console.log("cant play, game is over");
-    return false;
-  }
-
-  // only pick up pieces for White
-  if (piece.search(/^b/) !== -1) return false;
-}
-
 function makeRandomMove() {
   var possibleMoves = game.moves();
 
-  // game over
+  // Game over
   if (possibleMoves.length === 0) return;
 
   var randomIdx = Math.floor(Math.random() * possibleMoves.length);
@@ -345,21 +346,22 @@ function minimax(game, depth, alpha, beta, isMaximizingPlayer, sum, color) {
 }
 
 function checkStatus(color) {
+  console.log(`---Status log for ${color}---`);
   if (game.in_checkmate()) {
-    $("#status").html(`<b>Checkmate!</b> Oops, <b>${color}</b> lost.`);
+    console.log(`Checkmate! Oops, ${color} lost.`);
   } else if (game.insufficient_material()) {
-    $("#status").html(`It's a <b>draw!</b> (Insufficient Material)`);
+    console.log(`It's a draw! (Insufficient Material)`);
   } else if (game.in_threefold_repetition()) {
-    $("#status").html(`It's a <b>draw!</b> (Threefold Repetition)`);
+    console.log(`It's a draw! (Threefold Repetition)`);
   } else if (game.in_stalemate()) {
-    $("#status").html(`It's a <b>draw!</b> (Stalemate)`);
+    console.log(`It's a draw! (Stalemate)`);
   } else if (game.in_draw()) {
-    $("#status").html(`It's a <b>draw!</b> (50-move Rule)`);
+    console.log(`It's a draw! (50-move Rule)`);
   } else if (game.in_check()) {
-    $("#status").html(`Oops, <b>${color}</b> is in <b>check!</b>`);
+    console.log(`Oops, ${color} is in <b>check!</b>`);
     return false;
   } else {
-    $("#status").html(`No check, checkmate, or draw.`);
+    console.log(`No check, checkmate, or draw.`);
     return false;
   }
   return true;
@@ -460,8 +462,6 @@ function makeBestMove(color) {
     var move = getBestMove(game, color, -globalSum)[0];
   }
 
-  console.log("A move has been selected");
-
   globalSum = evaluateBoard(game, move, globalSum, "b");
   updateAdvantage();
 
@@ -472,14 +472,16 @@ function makeBestMove(color) {
     checkStatus("black");
 
     // Highlight black move
-    $board.find("." + squareClass).removeClass("highlight-black");
-    $board.find(".square-" + move.from).addClass("highlight-black");
-    squareToHighlight = move.to;
-    colorToHighlight = "black";
+    if (typeof $board != "undefined") {
+      $board.find("." + squareClass).removeClass("highlight-black");
+      $board.find(".square-" + move.from).addClass("highlight-black");
+      squareToHighlight = move.to;
+      colorToHighlight = "black";
 
-    $board
-      .find(".square-" + squareToHighlight)
-      .addClass("highlight-" + colorToHighlight);
+      $board
+        .find(".square-" + squareToHighlight)
+        .addClass("highlight-" + colorToHighlight);
+    }
   } else {
     checkStatus("white");
 
@@ -517,7 +519,22 @@ function greySquare(square, enemy) {
   $square.css("background", background);
 }
 
+function cursorHighlight(square) {
+  var $square = $("#board .square-" + square);
+  $square.css("box-shadow", "inset 0 0 3px 3px yellow");
+  //inset 0 0 3px 3px yellow;
+}
+
+function cursorUnhighlight(square) {
+  var $square = $("#board .square-" + square);
+  $square.css("box-shadow", "");
+}
+
 function onMouseoverSquare(square, piece) {
+  cursorUnhighlight(cursorPosition);
+  cursorHighlight(square);
+  cursorPosition = square;
+
   // get list of possible moves for this square
   var isBlack = piece && piece.startsWith("b");
   var moves = game.moves({
@@ -526,13 +543,13 @@ function onMouseoverSquare(square, piece) {
     enemy: isBlack,
   });
 
-  // exit if there are no moves available for this square
+  // Exit if there are no moves available for this square
   if (moves.length === 0) return;
 
-  // highlight the square they moused over
+  // Highlight the square they moused over
   greySquare(square, isBlack);
 
-  // highlight the possible squares for this piece
+  // Highlight the possible squares for this piece
   for (var i = 0; i < moves.length; i++) {
     greySquare(moves[i].to, isBlack);
   }
@@ -542,7 +559,20 @@ function onMouseoutSquare(square, piece) {
   removeGreySquares();
 }
 
-function onDrop(source, target) {
+function onDragStart(source, piece, position, orientation) {
+  // Do not pick up pieces if the game is over
+  if (game.game_over()) {
+    console.log("cant play, game is over");
+    return false;
+  }
+
+  // Only pick up pieces for White
+  if (piece.search(/^b/) !== -1) {
+    return false;
+  }
+}
+
+function onDrop(source, target, mouse) {
   removeGreySquares();
 
   // see if the move is legal
@@ -553,7 +583,13 @@ function onDrop(source, target) {
   });
 
   // illegal move
-  if (move === null) return "snapback";
+  if (move === null) {
+    console.log("not a move!");
+    selectedSourcePosition = "";
+    return "snapback";
+  }
+
+  if (!mouse) board.position(game.fen());
 
   if (move.captured) {
     score += scoreSheet[move.captured] * searchDepth;
@@ -562,19 +598,20 @@ function onDrop(source, target) {
       localStorage.setItem("high-score", score);
       document.getElementById("high-score").innerHTML = `HIGH SCORE: ${score}`;
     }
+
+    if (move.captured == "k") {
+      console.log("The king has been captured, well done.");
+    }
   }
 
   // make random legal move for black
   //window.setTimeout(makeRandomMove, 250);
 
-  if (!checkStatus("black"));
-  {
+  if (!checkStatus("black")) {
     // Make the best move for black
+    cursorUnhighlight(cursorPosition);
     window.setTimeout(function () {
       makeBestMove("b");
-      window.setTimeout(function () {
-        showHint();
-      }, 250);
     }, 250);
   }
 }
@@ -596,18 +633,6 @@ function pieceTheme(piece) {
     return "img/chesspieces/wikipedia/" + piece + ".png";
   }
 }
-
-var config = {
-  draggable: true,
-  position: dunsanyFEN,
-  onDragStart: onDragStart,
-  onDrop: onDrop,
-  onSnapEnd: onSnapEnd,
-  onMouseoutSquare: onMouseoutSquare,
-  onMouseoverSquare: onMouseoverSquare,
-  showNotation: false,
-  pieceTheme: pieceTheme,
-};
 
 function startGame() {
   character = document.querySelector(
@@ -633,4 +658,68 @@ function startGame() {
     "HIGH SCORE: " + (highScore ? highScore : "0");
   document.getElementById("setup").style.display = "none";
   document.getElementById("board-container").style.display = "block";
+
+  // Move the selection cursor with the arrow keys (will help with gamepad support too)
+  document.addEventListener(
+    "keydown",
+    function (event) {
+      var previousPosition = cursorPosition;
+      var currentVertical = parseInt(cursorPosition[1]);
+      var currentHorizontal = cursorPosition.charCodeAt(0) - 97;
+
+      switch (event.key) {
+        case "ArrowLeft":
+          if (0 < currentHorizontal) {
+            cursorPosition =
+              String.fromCharCode(96 + currentHorizontal) + currentVertical;
+          }
+          break;
+        case "ArrowRight":
+          if (7 > currentHorizontal) {
+            cursorPosition =
+              String.fromCharCode(98 + currentHorizontal) + currentVertical;
+          }
+          break;
+        case "ArrowDown":
+          if (1 < currentVertical) {
+            cursorPosition = cursorPosition[0] + (currentVertical - 1);
+          }
+          break;
+        case "ArrowUp":
+          if (8 > parseInt(currentVertical)) {
+            cursorPosition = cursorPosition[0] + (currentVertical + 1);
+          }
+          break;
+        case " ":
+          if (selectedSourcePosition == "") {
+            // Selecting a source square
+            selectedSourcePosition = cursorPosition;
+            console.log(`Player has selected ${selectedSourcePosition}`);
+          } else if (selectedSourcePosition != ("" || cursorPosition)) {
+            // Selecting a target
+            selectedTargetPosition = cursorPosition;
+            console.log(`Player has selected ${selectedTargetPosition}`);
+            onDrop(selectedSourcePosition, selectedTargetPosition, false);
+            selectedSourcePosition = "";
+            selectedTargetPosition = "";
+          } else if (cursorPosition == selectedSourcePosition) {
+            // Cancelling
+            selectedSourcePosition = "";
+            selectedTargetPosition = "";
+            console.log(`Player has cancelled their move`);
+          }
+          break;
+      }
+      //console.log(`Cursor position is now ${cursorPosition}`);
+
+      if (selectedSourcePosition == "") {
+        onMouseoutSquare();
+        onMouseoverSquare(cursorPosition, null);
+      }
+
+      cursorUnhighlight(previousPosition);
+      cursorHighlight(cursorPosition);
+    },
+    true
+  );
 }
