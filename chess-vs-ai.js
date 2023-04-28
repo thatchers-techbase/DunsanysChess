@@ -38,6 +38,8 @@ var selectedSourcePosition = "";
 var selectedTargetPosition = "";
 
 var score = 0;
+var startTime = Date.now();
+var endTime = Date.now();
 var highScore = localStorage.getItem("high-score");
 const scoreSheet = {
   p: 100,
@@ -601,6 +603,7 @@ function onDrop(source, target, mouse) {
 
     if (move.captured == "k") {
       console.log("The king has been captured, well done.");
+      showScoreScreen();
     }
   }
 
@@ -634,6 +637,23 @@ function pieceTheme(piece) {
   }
 }
 
+function showScoreScreen() {
+  document.getElementById("final-score").innerHTML = `SCORE: ${score}`;
+
+  endTime = Date.now();
+  var timeTaken = (endTime - startTime) / 1000; // Could potentially measure down to the millisecond if we feel like it
+  const minutes = Math.floor(timeTaken / 60);
+  const seconds = timeTaken - minutes * 60;
+
+  document.getElementById(
+    "final-time"
+  ).innerHTML = `TIME: ${minutes} minutes, ${seconds} seconds`;
+
+  document.getElementById("setup").style.display = "none";
+  document.getElementById("board-container").style.display = "none";
+  document.getElementById("score-container").style.display = "block";
+}
+
 function startGame() {
   character = document.querySelector(
     'input[name="character-select"]:checked'
@@ -658,6 +678,8 @@ function startGame() {
     "HIGH SCORE: " + (highScore ? highScore : "0");
   document.getElementById("setup").style.display = "none";
   document.getElementById("board-container").style.display = "block";
+
+  startTime = Date.now();
 
   // Move the selection cursor with the arrow keys (will help with gamepad support too)
   document.addEventListener(

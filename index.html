@@ -106,10 +106,19 @@
       <div id="board" style="width: 700px"></div>
       <br />
       <button onclick="window.location.reload()">Admit defeat</button>
-      <button onclick="highScoreOverlay()">High scores</button>
+      <button onclick="showScoreScreen()">High scores</button>
       <div id="difficulty-display" class="score high-score">
         DIFFICULTY: Medium
       </div>
+    </div>
+
+    <!-- game end screen -->
+    <div id="score-container" style="display: none">
+      <h1>Dunsany's Chess</h1>
+      <h1 id="win-status">YOU WIN</h1>
+      <h2 id="final-time">TIME: 3:02:0303</h2>
+      <h2 id="final-score">SCORE: 300</h2>
+      <button onclick="window.location.reload()">Play again</button>
     </div>
 
     <!-- scripts -->

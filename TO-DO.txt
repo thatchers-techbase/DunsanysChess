@@ -2,7 +2,7 @@
 	- See own movements
 	- See enemy movements
 	- Pawn double step at start (or always double step?)
-	- Horde chess layout
+	- Horde chess layouts x2
 	- Best move button
 - Xinput
 x Difficulty selector
