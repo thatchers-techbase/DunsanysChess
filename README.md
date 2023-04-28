@@ -16,16 +16,6 @@ A similar game is Horde chess.
 - Docs - <http://chessboardjs.com/docs>
 - Examples - <http://chessboardjs.com/examples>
 
-## Developer Tools
-
-```sh
-# create a build in the build/ directory
-npm run build
-
-# re-build the website
-npm run website
-```
-
 ## License
 
 [MIT License](LICENSE.md)
